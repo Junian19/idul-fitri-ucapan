@@ -1,12 +1,14 @@
-// Get elements
+// ========== AMBIL ELEMEN ==========
 const celebrateBtn = document.getElementById('celebrateBtn');
 const message = document.getElementById('message');
 const moon = document.getElementById('moon');
 const card = document.querySelector('.card');
 const ketupats = document.querySelectorAll('.ketupat');
 const stars = document.querySelectorAll('.star');
+const effectContainer = document.getElementById('effect-container');
 
-// Array of祝福 messages
+// ========== DATA UNTUK EFEK ==========
+// Array pesan ucapan
 const祝福Messages = [
     "✨ Taqabbalallahu minna wa minkum ✨",
     "🌙 Mohon maaf lahir dan batin 🌙",
@@ -15,98 +17,303 @@ const祝福Messages = [
     "🕌 Mari sambut fitrah yang suci 🕌",
     "☪️ Minal aidin wal faizin ☪️",
     "⭐ Semoga kita kembali suci ⭐",
-    "🌙 Selamat Idul Fitri, taqabbalallahu minna wa minkum 🌙"
+    "🌙 Selamat Idul Fitri, taqabbalallahu minna wa minkum 🌙",
+    "🌸 Mohon maaf atas segala khilaf 🌸",
+    "🕊️ Semoga kedamaian menyertai kita 🕊️"
 ];
 
-// Array of emojis for particles
-const celebrationEmojis = ['✨', '🌟', '⭐', '🌙', '🕌', '🕋', '🏮', '🎆', '🎇', '🌸', '🌺', '🌷'];
+// Array emoji untuk partikel
+const celebrationEmojis = ['✨', '🌟', '⭐', '🌙', '🕌', '🕋', '🏮', '🎆', '🎇', '🌸', '🌺', '🌷', '☪️', '🕊️'];
 
-// Function to create celebration effect
-function createCelebration() {
-    // Disable button temporarily to prevent spam
+// Array warna untuk confetti
+const confettiColors = [
+    '#FFD700', '#FFA500', '#FF8C00', '#FFB6C1', '#FF69B4', 
+    '#87CEEB', '#98FB98', '#DDA0DD', '#F0E68C', '#E6E6FA'
+];
+
+// ========== FUNGSI-FUNGSI EFEK ==========
+
+/**
+ * Fungsi utama untuk memicu semua efek menarik
+ */
+function createAmazingEffects() {
+    // Nonaktifkan tombol sementara
     celebrateBtn.disabled = true;
     celebrateBtn.style.opacity = '0.7';
     
-    // 1. Create glow overlay
-    const glowOverlay = document.createElement('div');
-    glowOverlay.className = 'glow-overlay';
-    document.body.appendChild(glowOverlay);
-
-    // 2. Flash the message card
-    message.classList.add('message-flash');
-
-    // 3. Highlight ketupats
+    // 1. Efek Confetti (100 partikel)
+    createConfetti(100);
+    
+    // 2. Efek Glow Overlay
+    createGlowOverlay();
+    
+    // 3. Efek Floating Messages (8 pesan)
+    createFloatingMessages(8);
+    
+    // 4. Efek Ripple dari tombol
+    createRippleEffect();
+    
+    // 5. Efek Flash pada Card
+    card.classList.add('card-flash');
+    
+    // 6. Efek Highlight pada Ketupat
     ketupats.forEach(ketupat => {
         ketupat.classList.add('ketupat-highlight');
     });
-
-    // 4. Create particles (50-70 particles)
-    const particleCount = 60;
-    for (let i = 0; i < particleCount; i++) {
-        setTimeout(() => {
-            createParticle();
-        }, i * 30); // Stagger the particles
-    }
-
-    // 5. Create random祝福 messages floating
-    for (let i = 0; i < 5; i++) {
-        setTimeout(() => {
-            createFloatingMessage();
-        }, i * 200);
-    }
-
-    // 6. Animate moon
-    moon.style.transform = 'scale(1.3) rotate(15deg)';
-    setTimeout(() => {
-        moon.style.transform = '';
-    }, 500);
-
-    // 7. Animate stars
-    stars.forEach((star, index) => {
-        setTimeout(() => {
-            star.style.transform = 'scale(2)';
-            star.style.opacity = '1';
-            setTimeout(() => {
-                star.style.transform = '';
-            }, 300);
-        }, index * 100);
+    
+    // 7. Efek Blast pada Bulan
+    moon.classList.add('moon-blast');
+    
+    // 8. Efek Burst pada Semua Bintang
+    stars.forEach(star => {
+        star.classList.add('star-burst');
     });
-
-    // 8. Animate card
+    
+    // 9. Efek Sparkle pada Teks Judul
+    const title = document.querySelector('h1');
+    title.classList.add('text-sparkle');
+    
+    // 10. Efek Rotasi pada Dekorasi
+    const decorations = document.querySelectorAll('h1::before, h1::after');
+    document.querySelectorAll('h1').forEach(el => {
+        el.classList.add('rotate-decoration');
+    });
+    
+    // 11. Efek Partikel Bintang (30 bintang terbang)
+    createStarParticles(30);
+    
+    // 12. Efek Pelangi (Rainbow Line)
+    createRainbowLine();
+    
+    // 13. Efek Pesan Kejutan di Tengah (3 kali)
+    for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+            createSurpriseMessage();
+        }, i * 600);
+    }
+    
+    // 14. Efek Getaran Halus pada Card
     card.style.transform = 'scale(1.02)';
     setTimeout(() => {
         card.style.transform = 'scale(1)';
     }, 500);
-
-    // 9. Show random祝福 in message
-    const random祝福 =祝福Messages[Math.floor(Math.random() *祝福Messages.length)];
     
-    // Create temporary祝福 element
-    const祝福Element = document.createElement('div');
-   祝福Element.textContent = random祝福;
-   祝福Element.style.cssText = `
-        position: absolute;
+    // 15. Efek Kedipan pada Tombol
+    celebrateBtn.style.transform = 'scale(1.1)';
+    setTimeout(() => {
+        celebrateBtn.style.transform = '';
+    }, 300);
+    
+    // Hapus semua kelas efek setelah selesai
+    setTimeout(() => {
+        card.classList.remove('card-flash');
+        ketupats.forEach(ketupat => {
+            ketupat.classList.remove('ketupat-highlight');
+        });
+        moon.classList.remove('moon-blast');
+        stars.forEach(star => {
+            star.classList.remove('star-burst');
+        });
+        title.classList.remove('text-sparkle');
+        document.querySelectorAll('h1').forEach(el => {
+            el.classList.remove('rotate-decoration');
+        });
+        
+        // Aktifkan tombol kembali
+        celebrateBtn.disabled = false;
+        celebrateBtn.style.opacity = '1';
+    }, 2000);
+}
+
+/**
+ * Membuat efek confetti
+ */
+function createConfetti(count) {
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti-particle';
+            
+            // Posisi acak
+            const startX = Math.random() * window.innerWidth;
+            confetti.style.left = startX + 'px';
+            confetti.style.top = '-10px';
+            
+            // Warna acak
+            const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+            confetti.style.background = `linear-gradient(135deg, ${color}, ${color}dd)`;
+            
+            // Ukuran acak
+            const width = 5 + Math.random() * 10;
+            const height = 10 + Math.random() * 20;
+            confetti.style.width = width + 'px';
+            confetti.style.height = height + 'px';
+            
+            // Rotasi acak
+            const rotation = Math.random() * 360;
+            confetti.style.transform = `rotate(${rotation}deg)`;
+            
+            // Durasi acak
+            const duration = 2 + Math.random() * 2;
+            confetti.style.animation = `confettiFall ${duration}s linear forwards`;
+            
+            document.body.appendChild(confetti);
+            
+            // Hapus setelah animasi
+            setTimeout(() => {
+                confetti.remove();
+            }, duration * 1000);
+        }, i * 20); // Staggered
+    }
+}
+
+/**
+ * Membuat efek glow overlay
+ */
+function createGlowOverlay() {
+    const overlay = document.createElement('div');
+    overlay.className = 'glow-overlay';
+    document.body.appendChild(overlay);
+    
+    setTimeout(() => {
+        overlay.remove();
+    }, 2000);
+}
+
+/**
+ * Membuat floating messages
+ */
+function createFloatingMessages(count) {
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const message = document.createElement('div');
+            message.className = 'floating-message';
+            
+            // Pesan acak
+            const randomMsg = 祝福Messages[Math.floor(Math.random() * 祝福Messages.length)];
+            message.textContent = randomMsg;
+            
+            // Posisi horizontal acak
+            const left = 10 + Math.random() * 80; // 10% - 90%
+            message.style.left = left + '%';
+            message.style.bottom = '-10%';
+            
+            // Delay animasi
+            message.style.animationDelay = (Math.random() * 0.5) + 's';
+            
+            document.body.appendChild(message);
+            
+            // Hapus setelah animasi
+            setTimeout(() => {
+                message.remove();
+            }, 4500);
+        }, i * 300);
+    }
+}
+
+/**
+ * Membuat efek ripple dari tombol
+ */
+function createRippleEffect() {
+    const rect = celebrateBtn.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = centerX + 'px';
+            ripple.style.top = centerY + 'px';
+            
+            // Ukuran berbeda untuk setiap ripple
+            const size = 100 + i * 50;
+            ripple.style.animation = `rippleAnim ${1.5 + i * 0.3}s ease-out forwards`;
+            
+            document.body.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 2000);
+        }, i * 200);
+    }
+}
+
+/**
+ * Membuat partikel bintang terbang
+ */
+function createStarParticles(count) {
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const star = document.createElement('div');
+            star.className = 'particle-star';
+            
+            // Pilih emoji acak
+            const emoji = celebrationEmojis[Math.floor(Math.random() * celebrationEmojis.length)];
+            star.textContent = emoji;
+            
+            // Posisi horizontal acak
+            const left = Math.random() * window.innerWidth;
+            star.style.left = left + 'px';
+            
+            // Animasi variasi
+            const duration = 1.5 + Math.random() * 1.5;
+            star.style.animation = `starFly ${duration}s ease-out forwards`;
+            
+            document.body.appendChild(star);
+            
+            setTimeout(() => {
+                star.remove();
+            }, duration * 1000);
+        }, i * 50);
+    }
+}
+
+/**
+ * Membuat rainbow line yang melintas
+ */
+function createRainbowLine() {
+    const line = document.createElement('div');
+    line.className = 'rainbow-line';
+    line.style.top = '50%';
+    document.body.appendChild(line);
+    
+    setTimeout(() => {
+        line.remove();
+    }, 2000);
+}
+
+/**
+ * Membuat pesan kejutan di tengah layar
+ */
+function createSurpriseMessage() {
+    const msg = document.createElement('div');
+    const random祝福 = 祝福Messages[Math.floor(Math.random() * 祝福Messages.length)];
+    
+    msg.textContent = random祝福;
+    msg.style.cssText = `
+        position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         background: linear-gradient(135deg, #0a2f35, #1a4a4f);
-        color: #ffd700;
-        padding: 20px 40px;
-        border-radius: 60px;
-        font-size: 24px;
+        color: gold;
+        padding: 25px 50px;
+        border-radius: 80px;
+        font-size: 28px;
         font-weight: bold;
-        box-shadow: 0 15px 40px rgba(255,215,0,0.5), 0 0 0 3px gold;
-        z-index: 100;
-        animation:祝福Appear 2s ease-in-out forwards;
+        box-shadow: 0 20px 50px rgba(255,215,0,0.7), 0 0 0 4px gold;
+        z-index: 10002;
+        border: 3px solid white;
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        animation: surpriseAnim 2s ease-in-out forwards;
         white-space: nowrap;
-        border: 2px solid white;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     `;
-
-    // Add祝福 animation
-    const祝福Style = document.createElement('style');
-   祝福Style.textContent = `
-        @keyframes祝福Appear {
+    
+    // Tambah style animasi
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes surpriseAnim {
             0% {
                 opacity: 0;
                 transform: translate(-50%, -50%) scale(0.3);
@@ -128,159 +335,128 @@ function createCelebration() {
             }
         }
     `;
-    document.head.appendChild(祝福Style);
-
-    message.style.position = 'relative';
-    message.appendChild(祝福Element);
-
-    // Remove祝福 after animation
+    document.head.appendChild(style);
+    
+    document.body.appendChild(msg);
+    
     setTimeout(() => {
-        祝福Element.remove();
-        祝福Style.remove();
-    }, 2000);
-
-    // Remove all effects after animation
-    setTimeout(() => {
-        glowOverlay.remove();
-        message.classList.remove('message-flash');
-        ketupats.forEach(ketupat => {
-            ketupat.classList.remove('ketupat-highlight');
-        });
-        
-        // Re-enable button
-        celebrateBtn.disabled = false;
-        celebrateBtn.style.opacity = '1';
+        msg.remove();
+        style.remove();
     }, 2000);
 }
 
-// Function to create a single particle
-function createParticle() {
-    const particle = document.createElement('div');
-    particle.className = 'celebration-particle';
+/**
+ * Membuat efek tambahan: lingkaran cahaya di sekitar elemen
+ */
+function createLightCircle(element) {
+    const rect = element.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
     
-    // Random emoji
-    const randomEmoji = celebrationEmojis[Math.floor(Math.random() * celebrationEmojis.length)];
-    particle.textContent = randomEmoji;
-    
-    // Random position (across the whole screen)
-    const startX = Math.random() * window.innerWidth;
-    const startY = window.innerHeight - 50; // Start from bottom
-    
-    particle.style.left = startX + 'px';
-    particle.style.top = startY + 'px';
-    
-    // Random animation duration
-    const duration = 1.5 + Math.random() * 1.5;
-    particle.style.animation = `particleAnimation ${duration}s ease-out forwards`;
-    
-    // Random size
-    const size = 20 + Math.floor(Math.random() * 30);
-    particle.style.fontSize = size + 'px';
-    
-    document.body.appendChild(particle);
-    
-    // Remove particle after animation
-    setTimeout(() => {
-        particle.remove();
-    }, duration * 1000);
-}
-
-// Function to create floating祝福 message
-function createFloatingMessage() {
-    const floating祝福 = document.createElement('div');
-    const random祝福 =祝福Messages[Math.floor(Math.random() *祝福Messages.length)];
-    floating祝福.textContent = random祝福;
-    
-    // Random position
-    const left = 10 + Math.random() * 80; // 10% - 90% of screen width
-    
-    floating祝福.style.cssText = `
+    const circle = document.createElement('div');
+    circle.style.cssText = `
         position: fixed;
-        left: ${left}%;
-        top: 110%;
-        transform: translateX(-50%);
-        background: linear-gradient(135deg, rgba(10, 47, 53, 0.9), rgba(26, 74, 79, 0.9));
-        color: gold;
-        padding: 12px 25px;
-        border-radius: 50px;
-        font-size: 18px;
-        font-weight: bold;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.3), 0 0 0 2px gold;
-        z-index: 10000;
-        border: 1px solid white;
-        backdrop-filter: blur(5px);
-        animation: floatUp 3s linear forwards;
+        left: ${centerX}px;
+        top: ${centerY}px;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,215,0,0.6) 0%, transparent 70%);
+        transform: translate(-50%, -50%);
+        animation: circleExpand 1.5s ease-out forwards;
         pointer-events: none;
-        white-space: nowrap;
+        z-index: 9995;
     `;
-
-    const floatStyle = document.createElement('style');
-    floatStyle.textContent = `
-        @keyframes floatUp {
+    
+    const circleStyle = document.createElement('style');
+    circleStyle.textContent = `
+        @keyframes circleExpand {
             0% {
-                top: 110%;
-                opacity: 0;
-                transform: translateX(-50%) scale(0.5);
-            }
-            20% {
+                width: 0;
+                height: 0;
                 opacity: 1;
-                transform: translateX(-50%) scale(1);
-            }
-            80% {
-                opacity: 1;
-                transform: translateX(-50%) scale(1);
             }
             100% {
-                top: -10%;
+                width: 400px;
+                height: 400px;
                 opacity: 0;
-                transform: translateX(-50%) scale(0.5);
             }
         }
     `;
-    document.head.appendChild(floatStyle);
-
-    document.body.appendChild(floating祝福);
-
-    // Remove after animation
+    document.head.appendChild(circleStyle);
+    
+    document.body.appendChild(circle);
+    
     setTimeout(() => {
-        floating祝福.remove();
-        floatStyle.remove();
-    }, 3000);
+        circle.remove();
+        circleStyle.remove();
+    }, 1500);
 }
 
-// Add click effect to moon
+// ========== EVENT LISTENERS ==========
+
+// Event klik tombol
+celebrateBtn.addEventListener('click', createAmazingEffects);
+
+// Efek kecil saat bulan diklik
 moon.addEventListener('click', () => {
-    // Small celebration on moon click
-    for (let i = 0; i < 10; i++) {
+    // Efek mini celebration
+    for (let i = 0; i < 15; i++) {
         setTimeout(() => {
-            createParticle();
+            const star = document.createElement('div');
+            star.className = 'particle-star';
+            star.textContent = '✨';
+            star.style.left = Math.random() * window.innerWidth + 'px';
+            star.style.animation = 'starFly 1.5s ease-out forwards';
+            document.body.appendChild(star);
+            
+            setTimeout(() => star.remove(), 1500);
         }, i * 50);
     }
     
-    moon.style.transform = 'scale(1.4) rotate(20deg)';
+    moon.classList.add('moon-blast');
     setTimeout(() => {
-        moon.style.transform = '';
-    }, 400);
+        moon.classList.remove('moon-blast');
+    }, 800);
+    
+    // Buat lingkaran cahaya
+    createLightCircle(moon);
 });
 
-// Event listener for celebrate button
-celebrateBtn.addEventListener('click', createCelebration);
-
-// Add keyboard shortcut (Enter key)
+// Keyboard shortcut (Enter)
 document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && !celebrateBtn.disabled) {
-        createCelebration();
+        createAmazingEffects();
     }
 });
 
-// Welcome message
-console.log('✨✨✨ Selamat Hari Raya Idul Fitri 1446 H ✨✨✨');
-console.log('🌙 Taqabbalallahu minna wa minkum 🌙');
-console.log('🕌 Mohon Maaf Lahir & Batin 🕌');
+// Efek hover pada bintang
+stars.forEach(star => {
+    star.addEventListener('mouseenter', () => {
+        star.style.transform = 'scale(1.8)';
+        star.style.transition = 'transform 0.3s ease';
+    });
+    
+    star.addEventListener('mouseleave', () => {
+        star.style.transform = '';
+    });
+});
 
-// Auto celebration on page load (after a short delay)
+// ========== INISIALISASI ==========
+
+// Auto celebration saat halaman dimuat
 window.addEventListener('load', () => {
     setTimeout(() => {
-        createCelebration();
-    }, 800);
+        createAmazingEffects();
+    }, 1000);
+});
+
+// Welcome message di console
+console.log('%c✨✨✨ SELAMAT HARI RAYA IDUL FITRI 1446 H ✨✨✨', 'color: gold; font-size: 20px; font-weight: bold;');
+console.log('%c🌙 Taqabbalallahu minna wa minkum 🌙', 'color: orange; font-size: 16px;');
+console.log('%c🕌 Mohon Maaf Lahir & Batin 🕌', 'color: #ff8c00; font-size: 16px;');
+
+// Tambah efek resize untuk menyesuaikan posisi
+window.addEventListener('resize', () => {
+    // Tidak perlu action khusus
 });
